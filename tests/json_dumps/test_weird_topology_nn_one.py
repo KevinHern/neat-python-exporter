@@ -64,7 +64,7 @@ weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
 
 # Converting to JSON
 neural_network_map = network_to_json(
-    inputs_name=["Input1", "Input2", "Input3", "Input4"],
+    inputs_name=["Input1", "Input2", "Input3"],
     outputs_name=["Output1"],
     inputs_per_layer=inputs_per_layer,
     layer_nodes=layers,
