@@ -1,5 +1,5 @@
 # Models
-from simulation.xor_game import XorGateGame
+from simulation.xor_simulation import XorGateGame
 
 # AI
 from neat_exporter_package.neat_utility import *
