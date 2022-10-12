@@ -1,3 +1,12 @@
+'''
+    CODE PROVIDED BY THE GITHUB USER <CodeReclaimers>, the creator of the package
+    'neat-python'.
+
+    This code is found in their repository in the following link:
+    https://github.com/CodeReclaimers/neat-python/blob/master/examples/xor/visualize.py
+'''
+
+
 import warnings
 
 import graphviz

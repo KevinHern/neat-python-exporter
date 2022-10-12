@@ -7,7 +7,7 @@ setup(
     author_email='kevinh16.kh@gmail.com',
     maintainer='Kevin Hernandez',
     maintainer_email='kevinh16.kh@gmail.com',
-    url='https://github.com/CodeReclaimers/neat-python',
+    url='https://github.com/KevinHern/neat-python-utility',
     license="BSD",
     description='A complementary package of the original neat-python library (NeuroEvolution of Augmenting Topologies)',
     long_description='Python implementation of a tool to export NEAT (NeuroEvolution of Augmenting Topologies) models' +

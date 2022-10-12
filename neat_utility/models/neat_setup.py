@@ -2,7 +2,7 @@
 import neat
 
 # utils
-from neat_utility.visualize import draw_net
+from neat_exporter_package.neat_utility.visualize import draw_net
 import shutil
 from os.path import join, dirname, exists
 from os import mkdir, listdir
@@ -11,20 +11,14 @@ from datetime import datetime
 
 
 class NeatSetup:
-    CONFIG_PATH = join(dirname(dirname(__file__)), 'artificial_intelligence', 'config-feedforward.txt')
-    LOG_PATH = join(dirname(dirname(__file__)), 'neat_logs')
-    CHECKPOINT_PATH = join(dirname(dirname(__file__)), 'neat_checkpoints')
-
     NEAT_CHECKPOINT_FILE_PREFIX = "neat-checkpoint"
-
-    MAIN_PY_DIRECTORY = dirname(dirname(dirname(__file__)))
-    SVG_PATH = join(dirname(dirname(dirname(__file__))), 'growth')
 
     def __init__(
             self,
             simulation, max_generations, neat_checkpoint_breakpoint,
-            file_prefix,
-            load_checkpoint_number=None, config_file=None, logging_function=None
+            file_prefix, simulation_file,
+            logging_function=None,
+            load_checkpoint_number=None, config_file=None
     ):
         # Sanity Checking: Make sure main parameters are not None
         assert None not in [simulation, max_generations, neat_checkpoint_breakpoint, file_prefix]
@@ -48,12 +42,22 @@ class NeatSetup:
 
         self.file_prefix = file_prefix
 
+        # Setting directories
+        self.root_directory = dirname(simulation_file)
+
+        self.config_path = join(self.root_directory, 'artificial_intelligence', 'config-feedforward.txt')
+
+        self.logs_path = join(self.root_directory, 'neat_logs')
+        self.checkpoint_path = join(self.root_directory, 'neat_checkpoints')
+
+        self.svg_path = join(self.root_directory, 'svg_growth')
+
         # Parsing configuration file
         if config_file is None:
             self.config_file = neat.config.Config(
                 neat.DefaultGenome, neat.DefaultReproduction,
                 neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                NeatSetup.CONFIG_PATH
+                self.config_path
             )
         else:
             self.config_file = config_file
@@ -62,50 +66,48 @@ class NeatSetup:
         self.logging_function = logging_function
 
         # Create checkpoint directory if it doesn't exist
-        if not exists(NeatSetup.CHECKPOINT_PATH):
-            mkdir(NeatSetup.CHECKPOINT_PATH)
+        if not exists(self.checkpoint_path):
+            mkdir(self.checkpoint_path)
 
         # Create SVG directory if it doesn't exist
-        if not exists(NeatSetup.SVG_PATH):
-            mkdir(NeatSetup.SVG_PATH)
+        if not exists(self.svg_path):
+            mkdir(self.svg_path)
 
         # Create logs directory if it doesn't exist
-        if not exists(NeatSetup.LOG_PATH):
-            mkdir(NeatSetup.LOG_PATH)
+        if not exists(self.logs_path):
+            mkdir(self.logs_path)
 
         # Setting up logger
         today_date = datetime.today().strftime('%Y_%m_%d-%H_%M')
         logging.basicConfig(
-            filename=join(NeatSetup.LOG_PATH, 'training_log_neat_{}.log'.format(today_date)),
+            filename=join(self.logs_path, 'training_log_neat_{}.log'.format(today_date)),
             filemode='w',
             level=logging.INFO,
             format='\n%(asctime)s-%(levelname)s> %(message)s',
             datefmt='%d-%b-%y %H:%M:%S'
         )
 
-    @staticmethod
-    def move_checkpoints():
+    def move_checkpoints(self):
         # Moving checkpoint files
-        for file in listdir(NeatSetup.MAIN_PY_DIRECTORY):
+        for file in listdir(self.root_directory):
             if file.startswith(NeatSetup.NEAT_CHECKPOINT_FILE_PREFIX):
                 shutil.move(
-                    src=join(NeatSetup.MAIN_PY_DIRECTORY, file),
-                    dst=join(NeatSetup.CHECKPOINT_PATH, file)
+                    src=join(self.root_directory, file),
+                    dst=join(self.checkpoint_path, file)
                 )
 
-    @staticmethod
-    def move_svg_visualization(file_prefix):
+    def move_svg_visualization(self):
         # Moving SVGs
-        for file in listdir(NeatSetup.MAIN_PY_DIRECTORY):
-            if file.startswith(file_prefix):
+        for file in listdir(self.root_directory):
+            if file.startswith(self.file_prefix):
                 shutil.move(
-                    src=join(NeatSetup.MAIN_PY_DIRECTORY, file),
-                    dst=join(NeatSetup.SVG_PATH, file)
+                    src=join(self.root_directory, file),
+                    dst=join(self.svg_path, file)
                 )
 
-    def log_stats(self, winner_genome):
+    def log_stats(self, generation, winner_genome):
         # Creating message to log
-        message = "\n---END OF GENERATION {}---\n".format(winner_genome)
+        message = "\n---END OF GENERATION {}---\n".format(generation)
         message += "Fittest Score: {}\n".format(winner_genome.genome.fitness)
         message += "" if self.logging_function is None else self.logging_function()
 
@@ -116,18 +118,26 @@ class NeatSetup:
 
     def _neat_simulation(self, genomes, config):
         # Play simulation
-        fittest_genome = self.simulation(genomes=genomes, config=config)
+        generation, fittest_genome = self.simulation(genomes=genomes, config=config)
 
         # Logging results
-        self.log_stats(winner_genome=fittest_genome)
+        self.log_stats(generation=generation, winner_genome=fittest_genome)
 
-        # Move SVG files
-        NeatSetup.move_svg_visualization(file_prefix=self.file_prefix)
+        # Visualize best genome
+        draw_net(
+            config=self.config_file,
+            genome=fittest_genome.genome,
+            view=False,
+            filename=self.file_prefix + "_{}".format(generation),
+            show_disabled=True,
+            fmt='svg'
+        )
+        self.move_svg_visualization()
 
         # Move Checkpoints
-        NeatSetup.move_checkpoints()
+        self.move_checkpoints()
 
-    def start_simulation(self):
+    def run_simulation(self):
         # Create population
         if self.load_checkpoint_number is None:
             # Creating population from config file
@@ -135,7 +145,7 @@ class NeatSetup:
         else:
             # Obtaining the path of the checkpoint
             checkpoint_path = join(
-                NeatSetup.CHECKPOINT_PATH,
+                self.checkpoint_path,
                 '{}-{}'.format(NeatSetup.NEAT_CHECKPOINT_FILE_PREFIX, self.load_checkpoint_number)
             )
 
@@ -157,8 +167,9 @@ class NeatSetup:
         draw_net(
             config=self.config_file,
             genome=winner,
-            view=True,
+            view=False,
             filename=self.file_prefix + "_fittest",
             show_disabled=True,
             fmt='svg'
         )
+        self.move_svg_visualization()
