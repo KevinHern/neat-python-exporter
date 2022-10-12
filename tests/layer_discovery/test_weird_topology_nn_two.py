@@ -1,5 +1,5 @@
-from neat_exporter_package.neat_exporter.genome_to_json import discover_neural_network_layers
-from neat_exporter_package.neat_exporter.models.connection import GenomeConnection
+from neat_exporter_package.neat_utility.genome_to_json import discover_neural_network_layers
+from neat_exporter_package.neat_utility.models.connection import GenomeConnection
 from random import randint
 
 # Initializing dummy ID inputs

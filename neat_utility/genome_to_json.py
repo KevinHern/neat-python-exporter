@@ -1,8 +1,8 @@
 import numpy as np
 
 # Models
-from neat_exporter_package.neat_exporter.models.connection import GenomeConnection
-from neat_exporter_package.neat_exporter.models.node import GenomeNode
+from neat_exporter_package.neat_utility.models.connection import GenomeConnection
+from neat_exporter_package.neat_utility.models.node import GenomeNode
 
 # Utils
 import json

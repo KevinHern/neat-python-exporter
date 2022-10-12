@@ -1,6 +1,6 @@
-from neat_exporter_package.neat_exporter.genome_to_json import discover_neural_network_layers, build_matrices
-from neat_exporter_package.neat_exporter.models.connection import GenomeConnection
-from neat_exporter_package.neat_exporter.models.node import GenomeNode
+from neat_exporter_package.neat_utility.genome_to_json import discover_neural_network_layers, build_matrices
+from neat_exporter_package.neat_utility.models.connection import GenomeConnection
+from neat_exporter_package.neat_utility.models.node import GenomeNode
 from random import randint, uniform, choice
 
 # Initializing dummy ID inputs

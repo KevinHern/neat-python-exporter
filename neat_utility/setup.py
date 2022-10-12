@@ -9,12 +9,12 @@ setup(
     maintainer_email='kevinh16.kh@gmail.com',
     url='https://github.com/CodeReclaimers/neat-python',
     license="BSD",
-    description='A JSON exporter of NEAT (NeuroEvolution of Augmenting Topologies) models created by the package neat-python',
+    description='A complementary package of the original neat-python library (NeuroEvolution of Augmenting Topologies)',
     long_description='Python implementation of a tool to export NEAT (NeuroEvolution of Augmenting Topologies) models' +
-                     ' into a general JSON format that can be used by other people and software. '
-                     'Developed by Kevin Hernandez and inspired by the package neat-python.',
+                     ' into a general JSON format that can be used by other people and software. It also makes it'
+                     ' easier to setup the algorithm and also includes a logging feature',
     long_description_content_type='text/x-rst',
-    packages=['neat_export'],
+    packages=['neat_utility'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
