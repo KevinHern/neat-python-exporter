@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='neat-python-exporter',
+    name='neat-python-utility',
     version='0.1',
     author='Kevin Hernandez',
     author_email='kevinh16.kh@gmail.com',
@@ -14,7 +14,8 @@ setup(
                      ' into a general JSON format that can be used by other people and software. It also makes it'
                      ' easier to setup the algorithm and also includes a logging feature',
     long_description_content_type='text/x-rst',
-    packages=['neat_utility'],
+    packages=['neat_utility', 'neat_utility/models'],
+    install_requires=['neat-python'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
