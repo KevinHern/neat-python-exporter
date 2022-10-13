@@ -107,9 +107,9 @@ class NeatSetup:
 
     def log_stats(self, generation, winner_genome):
         # Creating message to log
-        message = "\n---END OF GENERATION {}---\n".format(generation)
+        message = "---END OF GENERATION {}---\n".format(generation)
         message += "Fittest Score: {}\n".format(winner_genome.genome.fitness)
-        message += "" if self.logging_function is None else self.logging_function()
+        message += "" if self.logging_function is None else self.logging_function(agent=winner_genome)
 
         # Logging
         logging.info(
@@ -173,3 +173,6 @@ class NeatSetup:
             fmt='svg'
         )
         self.move_svg_visualization()
+
+        # Move remaining checkpoints
+        self.move_checkpoints()

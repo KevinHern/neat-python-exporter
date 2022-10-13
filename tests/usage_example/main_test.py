@@ -1,5 +1,6 @@
 # Models
 from neat_exporter_package.tests.usage_example.simulation.xor_simulation import XorGateGame
+from neat_exporter_package.tests.usage_example.simulation.xor_agent import XorAgent
 
 # AI
 import neat
@@ -83,7 +84,8 @@ if __name__ == '__main__':
     '''
         These parameters can be confusing, here is some help:
         - logging_function: This function will expand the information you want to register in the logs
-            This function MUST have a parameter that receives an Object with the datatype of our defined Agent.
+            This function MUST have a parameter that receives an Object with the datatype of our defined Agent and return
+            a formatted string
             
             Use 'None' if you don't desire to expand said functionality or pass down a function with the structure of
             log_agent(agent).
@@ -104,7 +106,7 @@ if __name__ == '__main__':
         config_file=config_file,
         simulation=simulation,
 
-        logging_function=None
+        logging_function=XorAgent.log_stats
     )
 
     # Run

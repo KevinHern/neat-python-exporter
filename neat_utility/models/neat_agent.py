@@ -12,3 +12,8 @@ class NeatAgent(metaclass=ABCMeta):
     @abstractmethod
     def __lt__(self, other):
         pass
+
+    @staticmethod
+    @abstractmethod
+    def log_stats(agent):
+        pass
