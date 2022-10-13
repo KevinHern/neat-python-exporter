@@ -19,10 +19,10 @@ new miscellaneous features**
 To install the library, execute the following command:
 
 ```
-pip <todo>
+pip install git+https://github.com/KevinHern/neat-python-utility
 ```
 
-Once it is done, check out [this example]() to learn how to use the functionalities!
+Once it is done, check out [this example](https://github.com/KevinHern/neat-python-utility/tree/main/tests/usage_example) to learn how to use the functionalities!
 
 # Quickstart
 
