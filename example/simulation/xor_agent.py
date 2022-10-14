@@ -1,5 +1,5 @@
 # Models
-from neat_exporter_package.neat_utility.models.neat_agent import NeatAgent
+from neat_python_utility.neat_utility import NeatAgent
 
 
 class XorAgent(NeatAgent):

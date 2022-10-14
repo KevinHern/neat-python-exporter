@@ -2,7 +2,7 @@
 from neat.nn import FeedForwardNetwork
 
 # Models
-from neat_exporter_package.tests.usage_example.simulation.xor_agent import XorAgent
+from neat_python_utility.example.simulation.xor_agent import XorAgent
 
 
 class XorGateGame:

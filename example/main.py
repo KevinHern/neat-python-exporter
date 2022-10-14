@@ -1,10 +1,10 @@
 # Models
-from neat_exporter_package.tests.usage_example.simulation.xor_simulation import XorGateGame
-from neat_exporter_package.tests.usage_example.simulation.xor_agent import XorAgent
+from neat_python_utility.example.simulation.xor_simulation import XorGateGame
+from neat_python_utility.example.simulation.xor_agent import XorAgent
 
 # AI
 import neat
-from neat_exporter_package.neat_utility.models.neat_setup import NeatSetup
+from neat_python_utility.neat_utility import NeatSetup
 
 # utils
 from os.path import dirname, join
@@ -34,12 +34,21 @@ if __name__ == '__main__':
         - file_prefix: This will be used to name all the visualization SVG files of the fittest agent
             from each generation
         - simulation_file: It is a constant. Always pass down the variable '__file__'
+        - is_feedforward_network: Tells the library that the current network is the feedforward type. If it is True,
+            then the Model to JSON export will be done automatically.
+            THE MODEL TO JSON EXPORT FUNCTIONALITY WILL ONLY WORK WITH FEEDFORWARD NETWORKS, YOU HAVE TO MANUALLY
+            SET THIS UP.
+        - inputs_name: The name of your inputs
+        - outputs_name: The name of your outputs
     '''
     # INTUITIVE PARAMETERS
     max_generations = 50
     neat_checkpoint_breakpoint = 10
     file_prefix = "xor"
     simulation_file = __file__
+    is_feedforward_network = True
+    inputs_name = ["Input One", "Input Two"]
+    outputs_name = ["Output One"]
 
     '''
         These parameters are not intuitive at first sight. Here is some explanation:
@@ -101,6 +110,9 @@ if __name__ == '__main__':
         neat_checkpoint_breakpoint=neat_checkpoint_breakpoint,
         file_prefix=file_prefix,
         simulation_file=simulation_file,
+        is_feedforward_network=is_feedforward_network,
+        inputs_name=inputs_name,
+        outputs_name=outputs_name,
 
         load_checkpoint_number=load_checkpoint_number,
         config_file=config_file,
