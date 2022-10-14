@@ -33,9 +33,9 @@ class NeatSetup:
         # Sanity checking: Making sure the following parameters are strings
         assert isinstance(file_prefix, str)
 
-        # Sanity Checking: Making sure the following parameters are tuples
-        assert isinstance(inputs_name, tuple)
-        assert isinstance(outputs_name, tuple)
+        # Sanity Checking: Making sure the following parameters are tuples and are not empty
+        assert (isinstance(inputs_name, list) or isinstance(inputs_name, tuple)) and inputs_name
+        assert (isinstance(outputs_name, list) or isinstance(outputs_name, tuple)) and outputs_name
 
         # Sanity checking: Making sure the following parameters, if not None, are the expected type
         assert True if load_checkpoint_number is None else isinstance(load_checkpoint_number, int)
