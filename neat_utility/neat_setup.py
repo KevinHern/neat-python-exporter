@@ -2,7 +2,7 @@
 import neat
 
 # utils
-from neat_exporter_package.neat_utility.visualize import draw_net
+from .visualize import draw_net
 import shutil
 from os.path import join, dirname, exists
 from os import mkdir, listdir
@@ -17,6 +17,7 @@ class NeatSetup:
             self,
             simulation, max_generations, neat_checkpoint_breakpoint,
             file_prefix, simulation_file,
+            feedforward_network=True,
             logging_function=None,
             load_checkpoint_number=None, config_file=None
     ):
