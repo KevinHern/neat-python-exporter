@@ -1,4 +1,4 @@
-from neat_python_utility.neat_utility.genome_to_json import discover_neural_network_layers
+from neat_python_utility.neat_utility.genome_to_json import clear_abandoned_nodes, discover_neural_network_layers
 from neat_python_utility.neat_utility.models.connection import GenomeConnection
 from random import randint
 
@@ -36,14 +36,19 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             {4}
         ]
 
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         result = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Assertions
-        self.assertEqual(result, expected_layers)
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
 
     def test_multiple_outputs_nn(self):
         # Initializing dummy ID inputs
@@ -77,14 +82,19 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             {4, 5, 6}
         ]
 
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         result = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Assertions
-        self.assertEqual(result, expected_layers)
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
 
     def test_two_hidden_layer_nn(self):
         # Initializing dummy ID inputs
@@ -121,14 +131,19 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             {5}
         ]
 
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         result = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Assertions
-        self.assertEqual(result, expected_layers)
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
 
     def test_weird_topology_one_nn(self):
         # Initializing dummy ID inputs
@@ -164,14 +179,19 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             {4}
         ]
 
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         result = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Assertions
-        self.assertEqual(result, expected_layers)
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
 
     def test_weird_topology_two_nn(self):
         # Initializing dummy ID inputs
@@ -208,14 +228,151 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             {4, 5}
         ]
 
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         result = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Assertions
-        self.assertEqual(result, expected_layers)
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
+
+    def test_skipped_input_to_output_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 15), (-2, 15),
+            (-1, 0), (15, 0), (-2, 0),
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        expected_layers = [
+            {15},
+            {0},
+        ]
+
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        result = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Assertions
+        self.assertEqual(expected_layers, result)
+        self.assertEqual(len(filtered_connections), len(connections))
+
+    def test_abandoned_nodes_one_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 41), (-2, 41),
+            (41, 1073),
+            (-1, 0), (41, 0)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        expected_layers = [
+            {41},
+            {0},
+        ]
+
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        result = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Assertions
+        self.assertEqual(expected_layers, result)
+        self.assertLess(len(filtered_connections), len(connections))
+
+    def test_abandoned_nodes_two_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(107)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 0), (-2, 0), (-1, 378),
+            (0, 421),
+            (421, 107), (0, 107), (-1, 107), (552, 107)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        expected_layers = [
+            {0},
+            {421},
+            {107}
+        ]
+
+        # Test
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        result = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Assertions
+        self.assertEqual(expected_layers, result)
+        self.assertLess(len(filtered_connections), len(connections))
 
 
 if __name__ == '__main__':

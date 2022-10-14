@@ -1,4 +1,4 @@
-from neat_python_utility.neat_utility.genome_to_json import discover_neural_network_layers, build_matrices
+from neat_python_utility.neat_utility.genome_to_json import clear_abandoned_nodes, discover_neural_network_layers, build_matrices
 from neat_python_utility.neat_utility.models.connection import GenomeConnection
 from neat_python_utility.neat_utility.models.node import GenomeNode
 from random import randint, uniform, choice
@@ -32,10 +32,13 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Initializing dummy nodes
@@ -81,7 +84,7 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
             id_inputs=id_inputs,
             layers=layers,
-            connections=connections,
+            connections=filtered_connections,
             nodes=nodes
         )
 
@@ -118,10 +121,13 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Initializing dummy nodes
@@ -169,7 +175,7 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
             id_inputs=id_inputs,
             layers=layers,
-            connections=connections,
+            connections=filtered_connections,
             nodes=nodes
         )
 
@@ -207,17 +213,13 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        expected_layers = [
-            {1, 2, 3, 4},
-            {6, 7, 8},
-            {9, 10},
-            {5}
-        ]
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
 
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Initializing dummy nodes
@@ -279,7 +281,7 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
             id_inputs=id_inputs,
             layers=layers,
-            connections=connections,
+            connections=filtered_connections,
             nodes=nodes
         )
 
@@ -316,17 +318,13 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        expected_layers = [
-            {1, 2, 3},
-            {5},
-            {6},
-            {4}
-        ]
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
 
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Initializing dummy nodes
@@ -383,7 +381,7 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
             id_inputs=id_inputs,
             layers=layers,
-            connections=connections,
+            connections=filtered_connections,
             nodes=nodes
         )
 
@@ -421,17 +419,13 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        expected_layers = [
-            {1, 2, 3},
-            {6},
-            {7},
-            {4, 5}
-        ]
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
 
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
-            connections=connections
+            connections=filtered_connections
         )
 
         # Initializing dummy nodes
@@ -489,7 +483,264 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
             id_inputs=id_inputs,
             layers=layers,
-            connections=connections,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Assertions
+        self.assertEqual(expected_weights_matrix, weights_matrix)
+        self.assertEqual(expected_biases_matrix, bias_matrix)
+        self.assertEqual(expected_af_matrix, af_matrix)
+        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
+
+    def test_skipped_input_to_output_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 15), (-2, 15),
+            (15, 0), (-1, 0), (-2, 0)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [15, 0]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight, connections[1].weight],
+            ],
+            [
+                [connections[3].weight, connections[4].weight, connections[2].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[1].bias],
+        ]
+
+        expected_af_matrix = [
+            [nodes[0].activation_function],
+            [nodes[1].activation_function],
+        ]
+
+        expected_inputs_per_layer = [
+            [-1, -2],
+            [-1, -2, 15],
+        ]
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Assertions
+        self.assertEqual(expected_weights_matrix, weights_matrix)
+        self.assertEqual(expected_biases_matrix, bias_matrix)
+        self.assertEqual(expected_af_matrix, af_matrix)
+        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
+
+    def test_abandoned_nodes_one_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 41), (-2, 41),
+            (41, 1073),
+            (-1, 0), (41, 0)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [41, 1073, 0]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight, connections[1].weight],
+            ],
+            [
+                [connections[3].weight, connections[4].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[2].bias],
+        ]
+
+        expected_af_matrix = [
+            [nodes[0].activation_function],
+            [nodes[2].activation_function],
+        ]
+
+        expected_inputs_per_layer = [
+            [-1, -2],
+            [-1, 41],
+        ]
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Assertions
+        self.assertEqual(expected_weights_matrix, weights_matrix)
+        self.assertEqual(expected_biases_matrix, bias_matrix)
+        self.assertEqual(expected_af_matrix, af_matrix)
+        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
+
+    def test_abandoned_nodes_two_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(107)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 0), (-2, 0), (-1, 378),
+            (0, 421),
+            (421, 107), (0, 107), (-1, 107), (552, 107)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
+                                                     connections=connections)
+
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [0, 378, 421, 552, 107]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight, connections[1].weight],
+            ],
+            [
+                [connections[3].weight],
+            ],
+            [
+                [connections[6].weight, connections[5].weight, connections[4].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[2].bias],
+            [nodes[4].bias],
+        ]
+
+        expected_af_matrix = [
+            [nodes[0].activation_function],
+            [nodes[2].activation_function],
+            [nodes[4].activation_function],
+        ]
+
+        expected_inputs_per_layer = [
+            [-1, -2],
+            [0],
+            [-1, 0, 421],
+        ]
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
             nodes=nodes
         )
 
