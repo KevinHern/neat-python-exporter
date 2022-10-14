@@ -1,0 +1,55 @@
+{
+    "inputs": [
+        "Input1 (-1)",
+        "Input2 (-2)"
+    ],
+    "outputs": [
+        "Output1 (0)"
+    ],
+    "layers": [
+        {
+            "layer": 0,
+            "id_node_inputs": [
+                -1,
+                -2
+            ],
+            "id_nodes": [
+                41
+            ],
+            "weights": [
+                [
+                    1015,
+                    769
+                ]
+            ],
+            "biases": [
+                -9.013253801981751
+            ],
+            "afunctions": [
+                "relu"
+            ]
+        },
+        {
+            "layer": 1,
+            "id_node_inputs": [
+                -1,
+                41
+            ],
+            "id_nodes": [
+                0
+            ],
+            "weights": [
+                [
+                    574,
+                    682
+                ]
+            ],
+            "biases": [
+                17.863698534365447
+            ],
+            "afunctions": [
+                "relu"
+            ]
+        }
+    ]
+}

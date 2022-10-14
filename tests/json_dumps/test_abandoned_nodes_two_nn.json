@@ -1,0 +1,77 @@
+{
+    "inputs": [
+        "Input1 (-1)",
+        "Input2 (-2)"
+    ],
+    "outputs": [
+        "Output1 (107)"
+    ],
+    "layers": [
+        {
+            "layer": 0,
+            "id_node_inputs": [
+                -1,
+                -2
+            ],
+            "id_nodes": [
+                0
+            ],
+            "weights": [
+                [
+                    798,
+                    768
+                ]
+            ],
+            "biases": [
+                11.499011012783342
+            ],
+            "afunctions": [
+                "tanh"
+            ]
+        },
+        {
+            "layer": 1,
+            "id_node_inputs": [
+                0
+            ],
+            "id_nodes": [
+                421
+            ],
+            "weights": [
+                [
+                    285
+                ]
+            ],
+            "biases": [
+                -8.916383385338527
+            ],
+            "afunctions": [
+                "tanh"
+            ]
+        },
+        {
+            "layer": 2,
+            "id_node_inputs": [
+                -1,
+                0,
+                421
+            ],
+            "id_nodes": [
+                107
+            ],
+            "weights": [
+                [
+                    639,
+                    698,
+                    881
+                ]
+            ],
+            "biases": [
+                22.782221014794168
+            ],
+            "afunctions": [
+                "sigmoid"
+            ]
+        }
+    ]
+}
