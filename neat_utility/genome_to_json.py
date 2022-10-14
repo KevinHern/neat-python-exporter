@@ -241,8 +241,10 @@ def network_to_json(
         inputs_per_layer, layer_nodes,
         weights, biases, activation_functions
 ):
-    # Make sure everything is right
+    # Sanity Checking
     assert len(weights) == len(biases) == len(activation_functions)
+    assert len(inputs_per_layer[0]) == inputs_name
+    assert len(layer_nodes[-1]) == len(outputs_name)
 
     # Formatting inputs
     formatted_inputs = []

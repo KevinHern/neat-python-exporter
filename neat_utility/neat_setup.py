@@ -1,8 +1,9 @@
 # AI
 import neat
 
-# utils
+# Utils
 from .visualize import draw_net
+from .genome_to_json import convert_genome_to_json
 import shutil
 from os.path import join, dirname, exists
 from os import mkdir, listdir
@@ -17,18 +18,24 @@ class NeatSetup:
             self,
             simulation, max_generations, neat_checkpoint_breakpoint,
             file_prefix, simulation_file,
-            feedforward_network=True,
+            inputs_name, outputs_name,
+            is_feedforward_network=False,
             logging_function=None,
             load_checkpoint_number=None, config_file=None
     ):
         # Sanity Checking: Make sure main parameters are not None
-        assert None not in [simulation, max_generations, neat_checkpoint_breakpoint, file_prefix]
+        assert None not in [simulation, max_generations, neat_checkpoint_breakpoint,
+                            file_prefix, inputs_name, outputs_name]
 
         # Sanity checking: Making sure the following parameters are integers
         assert isinstance(max_generations, int) and isinstance(neat_checkpoint_breakpoint, int)
 
         # Sanity checking: Making sure the following parameters are strings
         assert isinstance(file_prefix, str)
+
+        # Sanity Checking: Making sure the following parameters are tuples
+        assert isinstance(inputs_name, tuple)
+        assert isinstance(outputs_name, tuple)
 
         # Sanity checking: Making sure the following parameters, if not None, are the expected type
         assert True if load_checkpoint_number is None else isinstance(load_checkpoint_number, int)
@@ -43,10 +50,15 @@ class NeatSetup:
 
         self.file_prefix = file_prefix
 
+        self.is_feedforward_network = is_feedforward_network
+
+        self.inputs_name = inputs_name
+        self.outputs_name = outputs_name
+
         # Setting directories
         self.root_directory = dirname(simulation_file)
 
-        self.config_path = join(self.root_directory, 'artificial_intelligence', 'config-feedforward.txt')
+        self.artificial_intelligence_path = join(self.root_directory, 'artificial_intelligence')
 
         self.logs_path = join(self.root_directory, 'neat_logs')
         self.checkpoint_path = join(self.root_directory, 'neat_checkpoints')
@@ -58,7 +70,7 @@ class NeatSetup:
             self.config_file = neat.config.Config(
                 neat.DefaultGenome, neat.DefaultReproduction,
                 neat.DefaultSpeciesSet, neat.DefaultStagnation,
-                self.config_path
+                join(self.artificial_intelligence_path, 'config-feedforward.txt')
             )
         else:
             self.config_file = config_file
@@ -177,3 +189,13 @@ class NeatSetup:
 
         # Move remaining checkpoints
         self.move_checkpoints()
+
+        # Export model
+        if self.is_feedforward_network:
+            convert_genome_to_json(
+                filename=join(self.artificial_intelligence_path, 'network_dump.json'),
+                config=self.config_file,
+                genome=winner,
+                inputs_name=self.inputs_name,
+                outputs_name=self.outputs_name
+            )
