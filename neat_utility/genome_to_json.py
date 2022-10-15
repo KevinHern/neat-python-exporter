@@ -65,54 +65,6 @@ def deconstruct_network(genome):
     return nodes, connections
 
 
-def clear_abandoned_nodes(id_inputs, id_outputs, connections):
-    # Initialize variables
-    to_check_nodes = list(id_inputs).copy()
-    checked_nodes = []
-    useful_nodes = []
-
-    # Check every single node until the list is empty
-    while to_check_nodes:
-        # Extract first node
-        node = to_check_nodes.pop(0)
-
-        # Filter connections that contain the node as input
-        node_inputs_connections = list(
-            filter(lambda connection: node == connection.identification_number[0], connections)
-        )
-
-        # Filter connections that contain the node as output
-        node_outputs_connections = list(
-            filter(lambda connection: node == connection.identification_number[1], connections)
-        )
-
-        # The node is only useful if it has at least one connection acting as input and another acting as output
-        if (node in id_inputs or node in id_outputs) or \
-                (len(node_inputs_connections) > 0 and len(node_outputs_connections) > 0):
-            useful_nodes.append(node)
-
-        # Putting this node to checked state
-        checked_nodes.append(node)
-
-        # Check for new nodes
-        for node_connection in (node_inputs_connections + node_outputs_connections):
-            # If a node is not in the to_check or checked list, then add it to to_check
-            if not (node_connection.identification_number[0] in checked_nodes or
-                    node_connection.identification_number[0] in to_check_nodes):
-                to_check_nodes.append(node_connection.identification_number[0])
-            if not (node_connection.identification_number[1] in checked_nodes or
-                    node_connection.identification_number[1] in to_check_nodes):
-                to_check_nodes.append(node_connection.identification_number[1])
-
-    # Filter connections
-    filtered_connections = list(
-        filter(lambda connection: connection.identification_number[0] in useful_nodes and
-                                  connection.identification_number[1] in useful_nodes, connections)
-    )
-
-    return filtered_connections
-
-
 def discover_neural_network_layers(id_inputs, id_outputs, connections):
     # Obtain all the connections' identification_number
     connections_identification_numbers = []

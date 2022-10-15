@@ -4,7 +4,7 @@
         "Input2 (-2)"
     ],
     "outputs": [
-        "Output1 (107)"
+        "Output1 (0)"
     ],
     "layers": [
         {
@@ -14,63 +14,43 @@
                 -2
             ],
             "id_nodes": [
-                0
+                451
             ],
             "weights": [
                 [
-                    546,
-                    646
+                    973,
+                    88
                 ]
             ],
             "biases": [
-                26.182954346860512
+                -24.344679449855633
             ],
             "afunctions": [
-                "relu"
+                "tanh"
             ]
         },
         {
             "layer": 1,
             "id_node_inputs": [
+                -1,
+                -2,
+                451
+            ],
+            "id_nodes": [
                 0
             ],
-            "id_nodes": [
-                421
-            ],
             "weights": [
                 [
-                    243
+                    597,
+                    463,
+                    843
                 ]
             ],
             "biases": [
-                -29.583861074529505
+                -16.264752913267113
             ],
             "afunctions": [
-                "relu"
-            ]
-        },
-        {
-            "layer": 2,
-            "id_node_inputs": [
-                -1,
-                0,
-                421
-            ],
-            "id_nodes": [
-                107
-            ],
-            "weights": [
-                [
-                    679,
-                    723,
-                    469
-                ]
-            ],
-            "biases": [
-                15.04444111198218
-            ],
-            "afunctions": [
-                "relu"
+                "tanh"
             ]
         }
     ]

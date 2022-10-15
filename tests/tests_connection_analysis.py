@@ -1,12 +1,11 @@
 from neat_python_utility.neat_utility.connection_analysis import ConnectionAnalysis
-from neat_python_utility.neat_utility.genome_to_json import discover_neural_network_layers
 from neat_python_utility.neat_utility.models.connection import GenomeConnection
 from random import randint
 
 import unittest
 
 
-class LayerDiscoveryTestCase(unittest.TestCase):
+class ConnectionAnalysisTestCase(unittest.TestCase):
     def test_simple_nn(self):
         # Initializing dummy ID inputs
         id_inputs = set()
@@ -32,26 +31,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {1, 2, 3},
-            {4}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_multiple_outputs_nn(self):
         # Initializing dummy ID inputs
@@ -80,26 +75,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {1, 2, 3},
-            {4, 5, 6}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_two_hidden_layer_nn(self):
         # Initializing dummy ID inputs
@@ -129,28 +120,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {1, 2, 3, 4},
-            {6, 7, 8},
-            {9, 10},
-            {5}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_skipped_input_to_output_nn(self):
         # Initializing dummy ID inputs
@@ -176,26 +161,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {15},
-            {0},
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_abandoned_nodes_one_nn(self):
         # Initializing dummy ID inputs
@@ -222,26 +203,25 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = [
+            (-1, 41), (-2, 41),
+            (-1, 0), (41, 0)
+        ]
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {41},
-            {0},
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_abandoned_nodes_two_nn(self):
         # Initializing dummy ID inputs
@@ -268,27 +248,26 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = [
+            (-1, 0), (-2, 0),
+            (0, 421),
+            (421, 107), (0, 107), (-1, 107)
+        ]
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {0},
-            {421},
-            {107}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_weird_topology_one_nn(self):
         # Initializing dummy ID inputs
@@ -317,28 +296,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {1, 2, 3},
-            {5},
-            {6},
-            {4}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_weird_topology_two_nn(self):
         # Initializing dummy ID inputs
@@ -368,28 +341,22 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = connections_keys.copy()
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {1, 2, 3},
-            {6},
-            {7},
-            {4, 5}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_weird_topology_three_nn(self):
         # Initializing dummy ID inputs
@@ -417,26 +384,24 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
+        expected_useful_connections = [
+            (-1, 101), (-2, 101), (101, 0)
+        ]
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
+        )
+
+        # Test
         filtered_connections = ConnectionAnalysis(
             id_inputs=id_inputs, id_outputs=id_outputs,
             connections=connections
         ).filter_useful_connections()
 
-        expected_layers = [
-            {101},
-            {0}
-        ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
     def test_weird_topology_four_nn(self):
         # Initializing dummy ID inputs
@@ -466,26 +431,25 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        expected_layers = [
-            {451},
-            {0}
+        expected_useful_connections = [
+            (-1, 451), (-2, 451),
+            (-1, 0), (-2, 0), (451, 0)
         ]
-
-        # Test
-        result = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
+        expected_useful_connections = list(
+            filter(
+                lambda x: x.identification_number in expected_useful_connections,
+                connections
+            )
         )
 
+        # Test
+        filtered_connections = ConnectionAnalysis(
+                    id_inputs=id_inputs, id_outputs=id_outputs,
+                    connections=connections
+                ).filter_useful_connections()
+
         # Assertions
-        self.assertEqual(expected_layers, result)
+        self.assertEqual(expected_useful_connections, filtered_connections)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
-from neat_python_utility.neat_utility.genome_to_json import clear_abandoned_nodes, discover_neural_network_layers, build_matrices, network_to_json
+from neat_python_utility.neat_utility.connection_analysis import ConnectionAnalysis
+from neat_python_utility.neat_utility.genome_to_json import discover_neural_network_layers, build_matrices, network_to_json
 from neat_python_utility.neat_utility.models.connection import GenomeConnection
 from neat_python_utility.neat_utility.models.node import GenomeNode
 from random import randint, uniform, choice
@@ -39,9 +40,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -115,9 +120,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -192,9 +201,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -241,159 +254,6 @@ class JsonDumpTestCase(unittest.TestCase):
         # Asserting JSON exists
         self.assertEqual(exists(filename), True)
 
-    def test_weird_topology_one_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (2, 5), (3, 5),
-            (1, 6), (5, 6),
-            (1, 4), (3, 4), (5, 4), (6, 4)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
-
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
-        )
-
-        # Converting to JSON
-        neural_network_map = network_to_json(
-            inputs_name=["Input1", "Input2", "Input3"],
-            outputs_name=["Output1"],
-            inputs_per_layer=inputs_per_layer,
-            layer_nodes=layers,
-            weights=weights_matrix,
-            biases=bias_matrix,
-            activation_functions=af_matrix,
-        )
-
-        # Setting filename
-        filename = join(JSON_DIRECTORY, "test_weird_topology_nn_one.json")
-
-        # Creating JSON
-        with open(filename, "w") as outfile:
-            dump(neural_network_map, outfile, indent=4)
-
-        # Asserting JSON exists
-        self.assertEqual(exists(filename), True)
-
-    def test_weird_topology_two_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-        id_outputs.add(5)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (1, 6), (2, 6), (3, 6),
-            (1, 7), (6, 7),
-            (1, 4), (3, 4), (7, 4), (2, 5), (6, 5)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
-
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6, 7]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
-        )
-
-        # Converting to JSON
-        neural_network_map = network_to_json(
-            inputs_name=["Input1", "Input2", "Input3"],
-            outputs_name=["Output1", "Output2"],
-            inputs_per_layer=inputs_per_layer,
-            layer_nodes=layers,
-            weights=weights_matrix,
-            biases=bias_matrix,
-            activation_functions=af_matrix,
-        )
-
-        # Setting filename
-        filename = join(JSON_DIRECTORY, "test_weird_topology_nn_two.json")
-
-        # Creating JSON
-        with open(filename, "w") as outfile:
-            dump(neural_network_map, outfile, indent=4)
-
-        # Asserting JSON exists
-        self.assertEqual(exists(filename), True)
-
     def test_skipped_input_to_output_nn(self):
         # Initializing dummy ID inputs
         id_inputs = set()
@@ -418,9 +278,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -492,9 +356,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -566,9 +434,13 @@ class JsonDumpTestCase(unittest.TestCase):
             ), connections_keys)
         )
 
-        filtered_connections = clear_abandoned_nodes(id_inputs=id_inputs, id_outputs=id_outputs,
-                                                     connections=connections)
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
 
+        # Analyzing layers
         layers = discover_neural_network_layers(
             id_inputs=id_inputs,
             id_outputs=id_outputs,
@@ -607,6 +479,327 @@ class JsonDumpTestCase(unittest.TestCase):
 
         # Setting filename
         filename = join(JSON_DIRECTORY, "test_abandoned_nodes_two_nn.json")
+
+        # Creating JSON
+        with open(filename, "w") as outfile:
+            dump(neural_network_map, outfile, indent=4)
+
+        # Asserting JSON exists
+        self.assertEqual(exists(filename), True)
+
+    def test_weird_topology_one_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+        id_inputs.add(-3)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(4)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 1), (-2, 2), (-3, 3),
+            (2, 5), (3, 5),
+            (1, 6), (5, 6),
+            (1, 4), (3, 4), (5, 4), (6, 4)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
+
+        # Analyzing layers
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [1, 2, 3, 4, 5, 6]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Converting to JSON
+        neural_network_map = network_to_json(
+            inputs_name=["Input1", "Input2", "Input3"],
+            outputs_name=["Output1"],
+            inputs_per_layer=inputs_per_layer,
+            layer_nodes=layers,
+            weights=weights_matrix,
+            biases=bias_matrix,
+            activation_functions=af_matrix,
+        )
+
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_weird_topology_one_nn.json")
+
+        # Creating JSON
+        with open(filename, "w") as outfile:
+            dump(neural_network_map, outfile, indent=4)
+
+        # Asserting JSON exists
+        self.assertEqual(exists(filename), True)
+
+    def test_weird_topology_two_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+        id_inputs.add(-3)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(4)
+        id_outputs.add(5)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 1), (-2, 2), (-3, 3),
+            (1, 6), (2, 6), (3, 6),
+            (1, 7), (6, 7),
+            (1, 4), (3, 4), (7, 4), (2, 5), (6, 5)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
+
+        # Analyzing layers
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [1, 2, 3, 4, 5, 6, 7]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Converting to JSON
+        neural_network_map = network_to_json(
+            inputs_name=["Input1", "Input2", "Input3"],
+            outputs_name=["Output1", "Output2"],
+            inputs_per_layer=inputs_per_layer,
+            layer_nodes=layers,
+            weights=weights_matrix,
+            biases=bias_matrix,
+            activation_functions=af_matrix,
+        )
+
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_weird_topology_two_nn.json")
+
+        # Creating JSON
+        with open(filename, "w") as outfile:
+            dump(neural_network_map, outfile, indent=4)
+
+        # Asserting JSON exists
+        self.assertEqual(exists(filename), True)
+
+    def test_weird_topology_three_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 101), (-2, 101),
+            (101, 0), (101, 1751), (-2, 1751),
+            (-2, 1718), (1751, 1718),
+            (-2, 348), (1718, 348)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
+
+        # Analyzing layers
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [101, 0, 1751, 1718, 348]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Converting to JSON
+        neural_network_map = network_to_json(
+            inputs_name=["Input1", "Input2"],
+            outputs_name=["Output1"],
+            inputs_per_layer=inputs_per_layer,
+            layer_nodes=layers,
+            weights=weights_matrix,
+            biases=bias_matrix,
+            activation_functions=af_matrix,
+        )
+
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_weird_topology_three_nn.json")
+
+        # Creating JSON
+        with open(filename, "w") as outfile:
+            dump(neural_network_map, outfile, indent=4)
+
+        # Asserting JSON exists
+        self.assertEqual(exists(filename), True)
+
+    def test_weird_topology_four_nn(self):
+        # Initializing dummy ID inputs
+        id_inputs = set()
+        id_inputs.add(-1)
+        id_inputs.add(-2)
+
+        # Initializing dummy ID outputs
+        id_outputs = set()
+        id_outputs.add(0)
+
+        # Initializing dummy connections
+        connections_keys = [
+            (-1, 451), (-2, 451),
+            (-1, 0), (-2, 0), (451, 0),
+            (0, 1319),
+            (-1, 1457), (1583, 1457),
+            (1457, 1609),
+            (451, 967), (-1, 967), (1457, 967), (1609, 967)
+        ]
+
+        connections = list(
+            map(lambda key: GenomeConnection(
+                identification_number=key,
+                enabled=True,
+                weight=randint(0, 1024)
+            ), connections_keys)
+        )
+
+        # Filter connections
+        filtered_connections = ConnectionAnalysis(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections
+        ).filter_useful_connections()
+
+        # Analyzing layers
+        layers = discover_neural_network_layers(
+            id_inputs=id_inputs,
+            id_outputs=id_outputs,
+            connections=filtered_connections
+        )
+
+        # Initializing dummy nodes
+        nodes_indexes = [451, 0, 1319, 1457, 1609, 967, 1583]
+
+        nodes = list(
+            map(lambda node_index: GenomeNode(
+                node_id=node_index,
+                bias=uniform(-30, 30),
+                activation_function=choice(["tanh", "sigmoid", "relu"])
+            ), nodes_indexes)
+        )
+
+        # Call function
+        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
+            id_inputs=id_inputs,
+            layers=layers,
+            connections=filtered_connections,
+            nodes=nodes
+        )
+
+        # Converting to JSON
+        neural_network_map = network_to_json(
+            inputs_name=["Input1", "Input2"],
+            outputs_name=["Output1"],
+            inputs_per_layer=inputs_per_layer,
+            layer_nodes=layers,
+            weights=weights_matrix,
+            biases=bias_matrix,
+            activation_functions=af_matrix,
+        )
+
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_weird_topology_four_nn.json")
 
         # Creating JSON
         with open(filename, "w") as outfile:
