@@ -244,7 +244,7 @@ class LayerDiscoveryTestCase(unittest.TestCase):
             expected_inputs_per_layer=expected_inputs_per_layer,
         )
 
-    def test_weird_topology_five_nn(self):
+    def test_asymmetric_topology_one_nn(self):
         expected_layers = [
             {1024},
             {1666},
@@ -261,7 +261,71 @@ class LayerDiscoveryTestCase(unittest.TestCase):
 
         # Test
         self.run_test(
-            test_case=TestCases.WEIRD_TOPOLOGY_FIVE_NN,
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_ONE_NN,
+            expected_layers=expected_layers,
+            expected_inputs_per_layer=expected_inputs_per_layer,
+        )
+
+    def test_asymmetric_topology_two_nn(self):
+        expected_layers = [
+            {320},
+            {398},
+            {513},
+            {0}
+        ]
+
+        expected_inputs_per_layer = [
+            [-1],
+            [-1, -2, 320],
+            [-2, 398],
+            [320, 513]
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN,
+            expected_layers=expected_layers,
+            expected_inputs_per_layer=expected_inputs_per_layer,
+        )
+
+    def test_asymmetric_topology_three_nn(self):
+        expected_layers = [
+            {865},
+            {1850},
+            {168},
+            {0}
+        ]
+
+        expected_inputs_per_layer = [
+            [-2],
+            [-1, 865],
+            [-1, -2, 865, 1850],
+            [168]
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN,
+            expected_layers=expected_layers,
+            expected_inputs_per_layer=expected_inputs_per_layer,
+        )
+
+    def test_asymmetric_topology_four_nn(self):
+        expected_layers = [
+            {897, 967},
+            {49},
+            {0}
+        ]
+
+        expected_inputs_per_layer = [
+            [-1],
+            [-2, 897, 967],
+            [49]
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN,
             expected_layers=expected_layers,
             expected_inputs_per_layer=expected_inputs_per_layer,
         )

@@ -165,13 +165,43 @@ class JsonDumpTestCase(unittest.TestCase):
             filename=filename
         )
 
-    def test_weird_topology_five_nn(self):
+    def test_asymmetric_topology_one_nn(self):
         # Setting filename
         filename = join(JSON_DIRECTORY, "test_weird_topology_five_nn.json")
 
         # Test
         self.run_test(
-            test_case=TestCases.WEIRD_TOPOLOGY_FIVE_NN,
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_ONE_NN,
+            filename=filename
+        )
+
+    def test_asymmetric_topology_two_nn(self):
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_asymmetric_topology_two_nn.json")
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN,
+            filename=filename
+        )
+
+    def test_asymmetric_topology_three_nn(self):
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_asymmetric_topology_three_nn.json")
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN,
+            filename=filename
+        )
+
+    def test_asymmetric_topology_four_nn(self):
+        # Setting filename
+        filename = join(JSON_DIRECTORY, "test_asymmetric_topology_four_nn.json")
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN,
             filename=filename
         )
 

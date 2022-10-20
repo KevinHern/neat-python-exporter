@@ -4,73 +4,77 @@
         "Input1 (-2)"
     ],
     "outputs": [
-        "Output0 (107)"
+        "Output0 (0)"
     ],
     "layers": [
         {
             "layer": 0,
             "id_node_inputs": [
-                -1,
-                -2
+                -1
             ],
             "id_nodes": [
-                0
+                897,
+                967
             ],
             "weights": [
                 [
-                    255,
-                    755
+                    739
+                ],
+                [
+                    191
                 ]
             ],
             "biases": [
-                29.61809288754968
+                -17.871506239556453,
+                1.90130610920734
             ],
             "afunctions": [
-                "relu"
+                "sigmoid",
+                "sigmoid"
             ]
         },
         {
             "layer": 1,
             "id_node_inputs": [
-                0
+                -2,
+                897,
+                967
             ],
             "id_nodes": [
-                421
+                49
             ],
             "weights": [
                 [
-                    836
+                    41,
+                    963,
+                    277
                 ]
             ],
             "biases": [
-                16.518408036792344
+                27.38699568752684
             ],
             "afunctions": [
-                "tanh"
+                "relu"
             ]
         },
         {
             "layer": 2,
             "id_node_inputs": [
-                -1,
-                0,
-                421
+                49
             ],
             "id_nodes": [
-                107
+                0
             ],
             "weights": [
                 [
-                    313,
-                    774,
-                    746
+                    934
                 ]
             ],
             "biases": [
-                27.764412510713093
+                14.058997815079323
             ],
             "afunctions": [
-                "relu"
+                "tanh"
             ]
         }
     ]

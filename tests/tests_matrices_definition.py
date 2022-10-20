@@ -467,9 +467,9 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             expected_afs_matrix=expected_afs_matrix
         )
 
-    def test_weird_topology_five_nn(self):
+    def test_asymmetric_topology_one_nn(self):
         # Initializing variables
-        test_case = TestCases.WEIRD_TOPOLOGY_FIVE_NN
+        test_case = TestCases.ASYMMETRIC_TOPOLOGY_ONE_NN
         connections = test_case.connections
         nodes = test_case.nodes
 
@@ -499,6 +499,134 @@ class MatricesDefinitionTestCase(unittest.TestCase):
         expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[1].activation_function],
+            [nodes[2].activation_function],
+            [nodes[3].activation_function],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
+        )
+
+    def test_asymmetric_topology_two_nn(self):
+        # Initializing variables
+        test_case = TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight],
+            ],
+            [
+                [connections[1].weight, connections[2].weight, connections[3].weight],
+            ],
+            [
+                [connections[4].weight, connections[5].weight],
+            ],
+            [
+                [connections[6].weight, connections[7].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[1].bias],
+            [nodes[2].bias],
+            [nodes[3].bias],
+        ]
+
+        expected_afs_matrix = [
+            [nodes[0].activation_function],
+            [nodes[1].activation_function],
+            [nodes[2].activation_function],
+            [nodes[3].activation_function],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
+        )
+
+    def test_asymmetric_topology_three_nn(self):
+        # Initializing variables
+        test_case = TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight],
+            ],
+            [
+                [connections[1].weight, connections[2].weight],
+            ],
+            [
+                [connections[3].weight, connections[4].weight, connections[5].weight, connections[6].weight],
+            ],
+            [
+                [connections[7].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[1].bias],
+            [nodes[2].bias],
+            [nodes[3].bias],
+        ]
+
+        expected_afs_matrix = [
+            [nodes[0].activation_function],
+            [nodes[1].activation_function],
+            [nodes[2].activation_function],
+            [nodes[3].activation_function],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
+        )
+
+    def test_asymmetric_topology_four_nn(self):
+        # Initializing variables
+        test_case = TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight],
+                [connections[1].weight],
+            ],
+            [
+                [connections[2].weight, connections[3].weight, connections[4].weight],
+            ],
+            [
+                [connections[5].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias, nodes[1].bias],
+            [nodes[2].bias],
+            [nodes[3].bias],
+        ]
+
+        expected_afs_matrix = [
+            [nodes[0].activation_function, nodes[1].activation_function],
             [nodes[2].activation_function],
             [nodes[3].activation_function],
         ]

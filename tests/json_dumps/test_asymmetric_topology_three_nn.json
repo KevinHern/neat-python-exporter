@@ -4,46 +4,46 @@
         "Input1 (-2)"
     ],
     "outputs": [
-        "Output0 (107)"
+        "Output0 (0)"
     ],
     "layers": [
         {
             "layer": 0,
             "id_node_inputs": [
-                -1,
                 -2
             ],
             "id_nodes": [
-                0
+                865
             ],
             "weights": [
                 [
-                    255,
-                    755
+                    362
                 ]
             ],
             "biases": [
-                29.61809288754968
+                -3.095535646435046
             ],
             "afunctions": [
-                "relu"
+                "tanh"
             ]
         },
         {
             "layer": 1,
             "id_node_inputs": [
-                0
+                -1,
+                865
             ],
             "id_nodes": [
-                421
+                1850
             ],
             "weights": [
                 [
-                    836
+                    541,
+                    25
                 ]
             ],
             "biases": [
-                16.518408036792344
+                15.077147092133266
             ],
             "afunctions": [
                 "tanh"
@@ -53,24 +53,46 @@
             "layer": 2,
             "id_node_inputs": [
                 -1,
-                0,
-                421
+                -2,
+                865,
+                1850
             ],
             "id_nodes": [
-                107
+                168
             ],
             "weights": [
                 [
-                    313,
-                    774,
-                    746
+                    946,
+                    258,
+                    777,
+                    381
                 ]
             ],
             "biases": [
-                27.764412510713093
+                23.841115604318297
             ],
             "afunctions": [
-                "relu"
+                "tanh"
+            ]
+        },
+        {
+            "layer": 3,
+            "id_node_inputs": [
+                168
+            ],
+            "id_nodes": [
+                0
+            ],
+            "weights": [
+                [
+                    605
+                ]
+            ],
+            "biases": [
+                -29.196607623911195
+            ],
+            "afunctions": [
+                "tanh"
             ]
         }
     ]

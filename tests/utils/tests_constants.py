@@ -116,7 +116,7 @@ class TestCases:
         nodes_indexes=[451, 0, 1319, 1457, 1609, 967, 1583]
     )
 
-    WEIRD_TOPOLOGY_FIVE_NN = TestCaseModel(
+    ASYMMETRIC_TOPOLOGY_ONE_NN = TestCaseModel(
         id_inputs={-1, -2}, id_outputs={0},
         connections_keys=[
             (-2, 1024),
@@ -126,4 +126,36 @@ class TestCases:
             (-2, 808)
         ],
         nodes_indexes=[1024, 1666, 51, 0]
+    )
+
+    ASYMMETRIC_TOPOLOGY_TWO_NN = TestCaseModel(
+        id_inputs={-1, -2}, id_outputs={0},
+        connections_keys=[
+            (-1, 320),
+            (-1, 398), (-2, 398), (320, 398),
+            (-2, 513), (398, 513),
+            (320, 0), (513, 0),
+        ],
+        nodes_indexes=[320, 398, 513, 0]
+    )
+
+    ASYMMETRIC_TOPOLOGY_THREE_NN = TestCaseModel(
+        id_inputs={-1, -2}, id_outputs={0},
+        connections_keys=[
+            (-2, 865),
+            (-1, 1850), (865, 1850),
+            (-1, 168), (-2, 168), (865, 168), (1850, 168),
+            (168, 0),
+        ],
+        nodes_indexes=[865, 1850, 168, 0, 130]
+    )
+
+    ASYMMETRIC_TOPOLOGY_FOUR_NN = TestCaseModel(
+        id_inputs={-1, -2}, id_outputs={0},
+        connections_keys=[
+            (-1, 897), (-1, 967),
+            (-2, 49), (897, 49), (967, 49),
+            (49, 0),
+        ],
+        nodes_indexes=[897, 967, 49, 0]
     )

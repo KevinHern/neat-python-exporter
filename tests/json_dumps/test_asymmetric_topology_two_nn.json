@@ -4,26 +4,24 @@
         "Input1 (-2)"
     ],
     "outputs": [
-        "Output0 (107)"
+        "Output0 (0)"
     ],
     "layers": [
         {
             "layer": 0,
             "id_node_inputs": [
-                -1,
-                -2
+                -1
             ],
             "id_nodes": [
-                0
+                320
             ],
             "weights": [
                 [
-                    255,
-                    755
+                    828
                 ]
             ],
             "biases": [
-                29.61809288754968
+                -24.76151698412734
             ],
             "afunctions": [
                 "relu"
@@ -32,45 +30,69 @@
         {
             "layer": 1,
             "id_node_inputs": [
-                0
+                -1,
+                -2,
+                320
             ],
             "id_nodes": [
-                421
+                398
             ],
             "weights": [
                 [
-                    836
+                    807,
+                    644,
+                    388
                 ]
             ],
             "biases": [
-                16.518408036792344
+                -1.0501670896475375
             ],
             "afunctions": [
-                "tanh"
+                "relu"
             ]
         },
         {
             "layer": 2,
             "id_node_inputs": [
-                -1,
-                0,
-                421
+                -2,
+                398
             ],
             "id_nodes": [
-                107
+                513
             ],
             "weights": [
                 [
-                    313,
-                    774,
-                    746
+                    85,
+                    994
                 ]
             ],
             "biases": [
-                27.764412510713093
+                13.724357668398596
             ],
             "afunctions": [
                 "relu"
+            ]
+        },
+        {
+            "layer": 3,
+            "id_node_inputs": [
+                320,
+                513
+            ],
+            "id_nodes": [
+                0
+            ],
+            "weights": [
+                [
+                    108,
+                    172
+                ]
+            ],
+            "biases": [
+                -23.415126438727185
+            ],
+            "afunctions": [
+                "sigmoid"
             ]
         }
     ]

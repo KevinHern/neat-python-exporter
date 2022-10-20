@@ -146,7 +146,7 @@ class ConnectionAnalysisTestCase(unittest.TestCase):
             expected_connection_keys=expected_connections_keys,
         )
 
-    def test_weird_topology_five_nn(self):
+    def test_asymmetric_topology_one_nn(self):
         # Setting up connections
         expected_connections_keys = [
             (-2, 1024),
@@ -156,7 +156,34 @@ class ConnectionAnalysisTestCase(unittest.TestCase):
         ]
 
         self.run_test(
-            test_case=TestCases.WEIRD_TOPOLOGY_FIVE_NN,
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_ONE_NN,
+            expected_connection_keys=expected_connections_keys,
+        )
+
+    def test_asymmetric_topology_two_nn(self):
+        # Setting up connections
+        expected_connections_keys = TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN.connections_keys.copy()
+
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN,
+            expected_connection_keys=expected_connections_keys,
+        )
+
+    def test_asymmetric_topology_three_nn(self):
+        # Setting up connections
+        expected_connections_keys = TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN.connections_keys.copy()
+
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN,
+            expected_connection_keys=expected_connections_keys,
+        )
+
+    def test_asymmetric_topology_four_nn(self):
+        # Setting up connections
+        expected_connections_keys = TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN.connections_keys.copy()
+
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN,
             expected_connection_keys=expected_connections_keys,
         )
 

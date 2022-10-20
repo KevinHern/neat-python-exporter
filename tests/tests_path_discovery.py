@@ -223,7 +223,7 @@ class PathDiscoveryTestCase(unittest.TestCase):
             expected_paths=expected_paths,
         )
 
-    def test_weird_topology_five_nn(self):
+    def test_asymmetric_topology_one_nn(self):
         # Initializing dummy paths
         expected_paths = [
             [(-1, 51), (51, 0)],
@@ -234,7 +234,53 @@ class PathDiscoveryTestCase(unittest.TestCase):
 
         # Test
         self.run_test(
-            test_case=TestCases.WEIRD_TOPOLOGY_FIVE_NN,
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_ONE_NN,
+            expected_paths=expected_paths,
+        )
+
+    def test_asymmetric_topology_two_nn(self):
+        # Initializing dummy paths
+        expected_paths = [
+            [(-1, 320), (320, 0)],
+            [(-1, 398), (398, 513), (513, 0)],
+            [(-1, 320), (320, 398), (398, 513), (513, 0)],
+            [(-2, 513), (513, 0)],
+            [(-2, 398), (398, 513), (513, 0)],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_TWO_NN,
+            expected_paths=expected_paths,
+        )
+
+    def test_asymmetric_topology_three_nn(self):
+        # Initializing dummy paths
+        expected_paths = [
+            [(-1, 168), (168, 0)],
+            [(-1, 1850), (1850, 168), (168, 0)],
+            [(-2, 168), (168, 0)],
+            [(-2, 865), (865, 168), (168, 0)],
+            [(-2, 865), (865, 1850), (1850, 168), (168, 0)],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_THREE_NN,
+            expected_paths=expected_paths,
+        )
+
+    def test_asymmetric_topology_four_nn(self):
+        # Initializing dummy paths
+        expected_paths = [
+            [(-1, 897), (897, 49), (49, 0)],
+            [(-1, 967), (967, 49), (49, 0)],
+            [(-2, 49), (49, 0)],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=TestCases.ASYMMETRIC_TOPOLOGY_FOUR_NN,
             expected_paths=expected_paths,
         )
 
