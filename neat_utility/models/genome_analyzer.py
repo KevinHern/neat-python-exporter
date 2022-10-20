@@ -384,14 +384,12 @@ class GenomeAnalyzer:
 
         # Formatting inputs
         formatted_inputs = []
-        for id_input, input_name in zip(self.inputs_per_layer[0], inputs_name):
+        for id_input, input_name in zip(self.id_inputs, inputs_name):
             formatted_inputs.append("{} ({})".format(input_name, id_input))
 
         # Formatting Outputs
         formatted_outputs = []
-        id_outputs = list(self.layers[-1])
-        id_outputs.sort()
-        for id_output, output_name in zip(id_outputs, outputs_name):
+        for id_output, output_name in zip(self.id_outputs, outputs_name):
             formatted_outputs.append("{} ({})".format(output_name, id_output))
 
         # Initializing Map
