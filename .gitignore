@@ -6,3 +6,7 @@
 
 # PyCharm related
 /__pycache__/
+/example/neat_checkpoints/
+/example/neat_logs/
+/example/svg_growth/
+/example/artificial_intelligence/network_dump.json

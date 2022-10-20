@@ -3,7 +3,7 @@ import neat
 
 # Utils
 from .visualize import draw_net
-from .genome_to_json import convert_genome_to_json
+from .genome_to_json import export_genome_to_json
 import shutil
 from os.path import join, dirname, exists
 from os import mkdir, listdir
@@ -192,7 +192,7 @@ class NeatSetup:
 
         # Export model
         if self.is_feedforward_network:
-            convert_genome_to_json(
+            export_genome_to_json(
                 filename=join(self.artificial_intelligence_path, 'network_dump.json'),
                 config=self.config_file,
                 genome=winner,
