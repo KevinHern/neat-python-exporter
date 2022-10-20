@@ -196,6 +196,6 @@ class NeatSetup:
                 filename=join(self.artificial_intelligence_path, 'network_dump.json'),
                 config=self.config_file,
                 genome=winner,
-                inputs_name=self.inputs_name,
-                outputs_name=self.outputs_name
+                inputs_names=self.inputs_name,
+                outputs_names=self.outputs_name
             )
