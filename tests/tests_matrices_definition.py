@@ -1,61 +1,48 @@
-from neat_python_utility.neat_utility.connection_analysis import ConnectionAnalysis
-from neat_python_utility.neat_utility.genome_to_json import discover_neural_network_layers, build_matrices
-from neat_python_utility.neat_utility.models.connection import GenomeConnection
-from neat_python_utility.neat_utility.models.node import GenomeNode
-from random import randint, uniform, choice
+# Models
+from neat_python_utility.neat_utility.models.genome_analyzer import GenomeAnalyzer
+from neat_python_utility.tests.utils.tests_constants import TestCases
 
+# Testing
 import unittest
 
 
 class MatricesDefinitionTestCase(unittest.TestCase):
-    def test_simple_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
+    def run_test(self, test_case,
+                 expected_weights_matrix, expected_biases_matrix, expected_afs_matrix):
+        # Extracting values from test_case
+        id_inputs = test_case.id_inputs
+        id_outputs = test_case.id_outputs
+        connections = test_case.connections
+        nodes = test_case.nodes
 
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (1, 4), (2, 4), (3, 4),
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
+        # Instantiation a ConnectionAnalysis object
+        connection_analysis = GenomeAnalyzer(
+            id_inputs=id_inputs, id_outputs=id_outputs,
+            connections=connections, nodes=nodes,
         )
 
         # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
+        connection_analysis.filter_useful_connections()
 
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
+        # Get all paths
+        connection_analysis.discover_all_connection_paths()
 
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4]
+        # Construct layers and deduce inputs per layer
+        connection_analysis.construct_layers()
 
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(0, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Test
+        connection_analysis.construct_matrices()
+
+        # Assertions
+        self.assertEqual(expected_weights_matrix, connection_analysis.weights_matrix)
+        self.assertEqual(expected_biases_matrix, connection_analysis.biases_matrix)
+        self.assertEqual(expected_afs_matrix, connection_analysis.activation_functions_matrix)
+
+    def test_simple_nn(self):
+        # Initializing variables
+        test_case = TestCases.SIMPLE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -75,80 +62,24 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[3].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function, nodes[1].activation_function, nodes[2].activation_function],
             [nodes[3].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2, -3],
-            [1, 2, 3],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_multiple_outputs_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-        id_outputs.add(5)
-        id_outputs.add(6)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (1, 4), (2, 4), (3, 4), (1, 5), (3, 5), (2, 6),
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(0, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.MULTIPLE_OUTPUTS_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -170,81 +101,24 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[3].bias, nodes[4].bias, nodes[5].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function, nodes[1].activation_function, nodes[2].activation_function],
             [nodes[3].activation_function, nodes[4].activation_function, nodes[5].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2, -3],
-            [1, 2, 3],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_two_hidden_layers_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-        id_inputs.add(-4)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(5)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3), (-4, 4),
-            (1, 6), (2, 6), (3, 7), (4, 7), (1, 8), (4, 8),
-            (6, 9), (7, 9), (7, 10), (8, 10),
-            (9, 5), (10, 5)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(0, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.TWO_HIDDEN_LAYERS_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -275,7 +149,7 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[4].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function, nodes[1].activation_function, nodes[2].activation_function,
              nodes[3].activation_function],
             [nodes[5].activation_function, nodes[6].activation_function, nodes[7].activation_function],
@@ -283,74 +157,19 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[4].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2, -3, -4],
-            [1, 2, 3, 4],
-            [6, 7, 8],
-            [9, 10],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_skipped_input_to_output_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(0)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 15), (-2, 15),
-            (15, 0), (-1, 0), (-2, 0)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [15, 0]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.SKIPPED_INPUT_TO_OUTPUT_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -367,78 +186,24 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[1].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[1].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2],
-            [-1, -2, 15],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_abandoned_nodes_one_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(0)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 41), (-2, 41),
-            (41, 1073),
-            (-1, 0), (41, 0)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [41, 1073, 0]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.ABANDONED_NODES_ONE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -455,78 +220,24 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[2].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[2].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2],
-            [-1, 41],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_abandoned_nodes_two_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(107)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 0), (-2, 0), (-1, 378),
-            (0, 421),
-            (421, 107), (0, 107), (-1, 107), (552, 107)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [0, 378, 421, 552, 107]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.ABANDONED_NODES_TWO_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -547,187 +258,105 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[4].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[2].activation_function],
             [nodes[4].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2],
-            [0],
-            [-1, 0, 421],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
 
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
-
-    def test_weird_topology_one_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (2, 5), (3, 5),
-            (1, 6), (5, 6),
-            (1, 4), (3, 4), (5, 4), (6, 4)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+    def test_abandoned_nodes_three_nn(self):
+        # Initializing variables
+        test_case = TestCases.ABANDONED_NODES_THREE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
             [
-                [connections[0].weight, 0.0, 0.0],
-                [0.0, connections[1].weight, 0.0],
-                [0.0, 0.0, connections[2].weight],
+                [connections[0].weight, connections[1].weight],
             ],
             [
+                [connections[2].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[1].bias],
+        ]
+
+        expected_afs_matrix = [
+            [nodes[0].activation_function],
+            [nodes[1].activation_function],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
+        )
+
+    def test_weird_topology_one_nn(self):
+        # Initializing variables
+        test_case = TestCases.WEIRD_TOPOLOGY_ONE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[1].weight, 0.0],
+                [0.0, connections[2].weight],
+            ],
+            [
+                [connections[0].weight, 0.0, 0.0],
                 [0.0, connections[3].weight, connections[4].weight],
             ],
             [
                 [connections[5].weight, connections[6].weight],
             ],
             [
-                [connections[7].weight, connections[8].weight, connections[9].weight, connections[10].weight],
+                [connections[7].weight, connections[10].weight, connections[9].weight, connections[8].weight],
             ]
         ]
 
         expected_biases_matrix = [
-            [nodes[0].bias, nodes[1].bias, nodes[2].bias],
-            [nodes[4].bias],
+            [nodes[1].bias, nodes[2].bias],
+            [nodes[0].bias, nodes[4].bias],
             [nodes[5].bias],
             [nodes[3].bias],
         ]
 
-        expected_af_matrix = [
-            [nodes[0].activation_function, nodes[1].activation_function, nodes[2].activation_function],
-            [nodes[4].activation_function],
+        expected_afs_matrix = [
+            [nodes[1].activation_function, nodes[2].activation_function],
+            [nodes[0].activation_function, nodes[4].activation_function],
             [nodes[5].activation_function],
             [nodes[3].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2, -3],
-            [1, 2, 3],
-            [1, 5],
-            [1, 3, 5, 6],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_weird_topology_two_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-        id_inputs.add(-3)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(4)
-        id_outputs.add(5)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 1), (-2, 2), (-3, 3),
-            (1, 6), (2, 6), (3, 6),
-            (1, 7), (6, 7),
-            (1, 4), (3, 4), (7, 4), (2, 5), (6, 5)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [1, 2, 3, 4, 5, 6, 7]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.WEIRD_TOPOLOGY_TWO_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -755,83 +384,26 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[3].bias, nodes[4].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function, nodes[1].activation_function, nodes[2].activation_function],
             [nodes[5].activation_function],
             [nodes[6].activation_function],
             [nodes[3].activation_function, nodes[4].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2, -3],
-            [1, 2, 3],
-            [1, 6],
-            [1, 2, 3, 6, 7],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_weird_topology_three_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(0)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 101), (-2, 101),
-            (101, 0), (101, 1751), (-2, 1751),
-            (-2, 1718), (1751, 1718),
-            (-2, 348), (1718, 348)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [101, 0, 1751, 1718, 348]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.WEIRD_TOPOLOGY_THREE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -848,81 +420,24 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[1].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[1].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2],
-            [101],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
-
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
 
     def test_weird_topology_four_nn(self):
-        # Initializing dummy ID inputs
-        id_inputs = set()
-        id_inputs.add(-1)
-        id_inputs.add(-2)
-
-        # Initializing dummy ID outputs
-        id_outputs = set()
-        id_outputs.add(0)
-
-        # Initializing dummy connections
-        connections_keys = [
-            (-1, 451), (-2, 451),
-            (-1, 0), (-2, 0), (451, 0),
-            (0, 1319),
-            (-1, 1457), (1583, 1457),
-            (1457, 1609),
-            (451, 967), (-1, 967), (1457, 967), (1609, 967)
-        ]
-
-        connections = list(
-            map(lambda key: GenomeConnection(
-                identification_number=key,
-                enabled=True,
-                weight=randint(0, 1024)
-            ), connections_keys)
-        )
-
-        # Filter connections
-        filtered_connections = ConnectionAnalysis(
-            id_inputs=id_inputs, id_outputs=id_outputs,
-            connections=connections
-        ).filter_useful_connections()
-
-        # Analyzing layers
-        layers = discover_neural_network_layers(
-            id_inputs=id_inputs,
-            id_outputs=id_outputs,
-            connections=filtered_connections
-        )
-
-        # Initializing dummy nodes
-        nodes_indexes = [451, 0, 1319, 1457, 1609, 967, 1583]
-
-        nodes = list(
-            map(lambda node_index: GenomeNode(
-                node_id=node_index,
-                bias=uniform(-30, 30),
-                activation_function=choice(["tanh", "sigmoid", "relu"])
-            ), nodes_indexes)
-        )
+        # Initializing variables
+        test_case = TestCases.WEIRD_TOPOLOGY_FOUR_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
 
         # Initializing expected matrices
         expected_weights_matrix = [
@@ -939,29 +454,62 @@ class MatricesDefinitionTestCase(unittest.TestCase):
             [nodes[1].bias],
         ]
 
-        expected_af_matrix = [
+        expected_afs_matrix = [
             [nodes[0].activation_function],
             [nodes[1].activation_function],
         ]
 
-        expected_inputs_per_layer = [
-            [-1, -2],
-            [-1, -2, 451],
-        ]
-
-        # Call function
-        weights_matrix, bias_matrix, af_matrix, inputs_per_layer = build_matrices(
-            id_inputs=id_inputs,
-            layers=layers,
-            connections=filtered_connections,
-            nodes=nodes
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
         )
 
-        # Assertions
-        self.assertEqual(expected_weights_matrix, weights_matrix)
-        self.assertEqual(expected_biases_matrix, bias_matrix)
-        self.assertEqual(expected_af_matrix, af_matrix)
-        self.assertEqual(expected_inputs_per_layer, inputs_per_layer)
+    def test_weird_topology_five_nn(self):
+        # Initializing variables
+        test_case = TestCases.WEIRD_TOPOLOGY_FIVE_NN
+        connections = test_case.connections
+        nodes = test_case.nodes
+
+        # Initializing expected matrices
+        expected_weights_matrix = [
+            [
+                [connections[0].weight],
+            ],
+            [
+                [connections[1].weight],
+            ],
+            [
+                [connections[2].weight, connections[3].weight, connections[4].weight, connections[5].weight],
+            ],
+            [
+                [connections[6].weight],
+            ],
+        ]
+
+        expected_biases_matrix = [
+            [nodes[0].bias],
+            [nodes[1].bias],
+            [nodes[2].bias],
+            [nodes[3].bias],
+        ]
+
+        expected_afs_matrix = [
+            [nodes[0].activation_function],
+            [nodes[1].activation_function],
+            [nodes[2].activation_function],
+            [nodes[3].activation_function],
+        ]
+
+        # Test
+        self.run_test(
+            test_case=test_case,
+            expected_weights_matrix=expected_weights_matrix,
+            expected_biases_matrix=expected_biases_matrix,
+            expected_afs_matrix=expected_afs_matrix
+        )
 
 
 if __name__ == '__main__':
