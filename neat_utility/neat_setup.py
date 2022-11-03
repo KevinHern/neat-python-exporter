@@ -9,6 +9,7 @@ from os.path import join, dirname, exists
 from os import mkdir, listdir
 import logging
 from datetime import datetime
+import types
 
 
 class NeatSetup:
@@ -23,23 +24,28 @@ class NeatSetup:
             logging_function=None,
             load_checkpoint_number=None, config_file=None
     ):
-        # Sanity Checking: Make sure main parameters are not None
-        assert None not in [simulation, max_generations, neat_checkpoint_breakpoint,
-                            file_prefix, inputs_name, outputs_name]
+        # Sanity Checking: Making sure the following parameters are functions
+        assert callable(simulation)
 
-        # Sanity checking: Making sure the following parameters are integers
-        assert isinstance(max_generations, int) and isinstance(neat_checkpoint_breakpoint, int)
+        # Sanity checking: Making sure the following parameters are integers and have valid values
+        assert isinstance(max_generations, int) and max_generations > 1
+        assert isinstance(neat_checkpoint_breakpoint, int) and neat_checkpoint_breakpoint >= 0
 
-        # Sanity checking: Making sure the following parameters are strings
-        assert isinstance(file_prefix, str)
+        # Sanity checking: Making sure the following parameters are strings and are nor empty
+        assert isinstance(file_prefix, str) and len(file_prefix) > 0
+        assert isinstance(simulation_file, str) and len(simulation_file) > 0
 
         # Sanity Checking: Making sure the following parameters are tuples and are not empty
         assert (isinstance(inputs_name, list) or isinstance(inputs_name, tuple)) and inputs_name
         assert (isinstance(outputs_name, list) or isinstance(outputs_name, tuple)) and outputs_name
 
+        # Sanity checking: Making sure the following parameters are booleans
+        assert isinstance(is_feedforward_network, bool)
+
         # Sanity checking: Making sure the following parameters, if not None, are the expected type
-        assert True if load_checkpoint_number is None else isinstance(load_checkpoint_number, int)
-        assert True if config_file is None else isinstance(load_checkpoint_number, neat.config.Config)
+        assert True if load_checkpoint_number is None else\
+            (isinstance(load_checkpoint_number, int) and load_checkpoint_number >= 0)
+        assert True if config_file is None else isinstance(config_file, neat.config.Config)
 
         # Initializing parameters for simulations
         self.simulation = simulation
