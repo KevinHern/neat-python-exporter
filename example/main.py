@@ -37,7 +37,7 @@ if __name__ == '__main__':
         - is_feedforward_network: Tells the library that the current network is the feedforward type. If it is True,
             then the Model to JSON export will be done automatically.
             THE MODEL TO JSON EXPORT FUNCTIONALITY WILL ONLY WORK WITH FEEDFORWARD NETWORKS, YOU HAVE TO MANUALLY
-            SET THIS UP.
+            SET THIS UP. By default, it is turned off.
         - inputs_name: The name of your inputs
         - outputs_name: The name of your outputs
     '''
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     simulation = game.simulation        # Go to simulation/xor_simulation.py to check how to setup the simulation for the problem
 
     '''
-        These parameters can be confusing, here is some help:
+        These parameters may be confusing, here is some help:
         - logging_function: This function will expand the information you want to register in the logs
             This function MUST have a parameter that receives an Object with the datatype of our defined Agent and return
             a formatted string

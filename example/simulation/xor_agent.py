@@ -11,7 +11,7 @@ class XorAgent(NeatAgent):
         - FIRST: Inherit from the abstract class 'NeatAgent'
         - SECOND: Overwrite the __lt__ and __eq__ functions. The __lt__ may vary depending if your problem
             is maximization or minimization
-        - THIRD: Overwrite the log_stats(agent) by expanding it or just return nothing
+        - THIRD: Overwrite the log_stats(agent) by expanding it or just return None
         - FOURTH: The constructor MUST receive a genome and a neural network. You have to save those variables somewhere
         - FIFTH: Create a function similar to 'think(inputs)' that allows the agent process information and then spit
             out a result

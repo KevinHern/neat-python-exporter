@@ -27,12 +27,12 @@ class XorGateGame:
     def run(self, generation):
         # Let agents perform their action
         for xor_agent in generation:
-            for inputs, outputs in zip(XorGateGame.INPUTS, XorGateGame.XOR_OUTPUTS):
+            for xor_input, xor_output in zip(XorGateGame.INPUTS, XorGateGame.XOR_OUTPUTS):
                 # Agent processes the inputs and outputs a result
-                output = xor_agent.brain.activate(inputs)
+                output = xor_agent.brain.activate(xor_input)
 
                 # Do something with the result, in this case, calculate loss
-                xor_agent.loss += (output[0] - outputs[0]) ** 2
+                xor_agent.loss += (output[0] - xor_output[0]) ** 2
 
             # Modify fitness
             xor_agent.genome.fitness -= xor_agent.loss
@@ -45,7 +45,7 @@ class XorGateGame:
         # Create Population
         new_generation = []
         for genome_id, genome in genomes:
-            # Setting fitness to 4, we will minimize fitness in this example
+            # Setting fitness to 4, we will maximize fitness in this example
             genome.fitness = 4.0
 
             # Creating Agent
@@ -61,5 +61,5 @@ class XorGateGame:
         # Sort agents by fitness
         sorted_agents = sorted(new_generation)
 
-        # Return current fittest
+        # Return current generation and fittest
         return self.generation, sorted_agents[0]
