@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='neat_python_utility',
-    version='0.2',
+    version='0.2.1',
     author='Kevin Hernandez',
     author_email='kevinh16.kh@gmail.com',
     maintainer='Kevin Hernandez',
