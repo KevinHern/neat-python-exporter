@@ -9,7 +9,6 @@ from os.path import join, dirname, exists
 from os import mkdir, listdir
 import logging
 from datetime import datetime
-import types
 
 
 class NeatSetup:
