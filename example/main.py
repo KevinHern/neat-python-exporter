@@ -103,6 +103,7 @@ if __name__ == '__main__':
             go to simulation/xor_agent.py as an example
     '''
     # CONFUSING PARAMETERS
+    logging_function = XorAgent.log_stats
 
     # Setting up NEAT Algorithm
     neatSetup = NeatSetup(
@@ -118,7 +119,7 @@ if __name__ == '__main__':
         config_file=config_file,
         simulation=simulation,
 
-        logging_function=XorAgent.log_stats
+        logging_function=logging_function
     )
 
     # Run

@@ -49,3 +49,4 @@ habits. Keeping everything organized and separated, will make things easier to d
 - The configuration file that contains parameters to set up properly the NEAT algorithm
 **needs** to be named **config-feedforward.txt** under the **artificial_intelligence/** directory.
 - The export feature **only** works with **Feed Forward networks**
+- If you want a more complex example using this library, check out this [AI Learns to play Flappy Bird](https://github.com/KevinHern/flappy_bird_ai). 
