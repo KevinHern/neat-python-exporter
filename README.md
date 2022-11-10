@@ -37,7 +37,7 @@ The most notable file is the NEAT configuration file that the original neat-pyth
 needs in order to set up the algorithm the way you want.
 - **simulation/**:
 This directory will contain all the files that you may need to run a simulation to find the
-solution of the problem you desire to solve using NEAT
+solution of the problem you desire to solve using NEAT.
 - **main.py**: A simple file with few lines of code used to start the simulation
 and the algorithm itself.
 
@@ -48,5 +48,7 @@ habits. Keeping everything organized and separated, will make things easier to d
 
 - The configuration file that contains parameters to set up properly the NEAT algorithm
 **needs** to be named **config-feedforward.txt** under the **artificial_intelligence/** directory.
-- The export feature **only** works with **Feed Forward networks**
+- The export feature **only** works with **Feed Forward networks**.
 - If you want a more complex example using this library, check out this [AI Learns to play Flappy Bird](https://github.com/KevinHern/flappy_bird_ai). 
+- This package also uses [Graphviz](https://graphviz.org/download/). Make sure to check out their site to **properly** install it, else you will
+get an error of executables not found in your machine's PATH.
