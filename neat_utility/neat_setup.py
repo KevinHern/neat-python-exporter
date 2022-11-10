@@ -61,7 +61,7 @@ class NeatSetup:
         self.outputs_name = outputs_name
 
         # Setting directories
-        self.root_directory = dirname(simulation_file)
+        self.root_directory = dirname(simulation_file) or '.'
 
         self.artificial_intelligence_path = join(self.root_directory, 'artificial_intelligence')
 
